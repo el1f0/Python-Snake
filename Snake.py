@@ -16,7 +16,8 @@ green = (0,255,0)
 red = (255,0,0)
 black = (0,0,0)
 white = (255,255,255)
-
+light_gray = (170,170,170)
+dark_gray = (100,100,100)
 # Variables
 
 has_paused = False
@@ -42,13 +43,29 @@ def your_score(score):
     value = score_font.render("Score: " + str(score), True, white)
     dis.blit(value, [0,0])
 
-def message(msg, color):
+def message(msg, color, x, y, mouse_pos):
+    global mesg_rect
+    
     mesg = font_style.render(msg, True, color)
     mesg_rect = mesg.get_rect()
-    mesg_rect.center = (dis_width/2, dis_height/2)
+    mesg_rect.center = (x, y)
+    
+    global pos_x, pos_y, text_width, text_height
+    
+    (text_width, text_height) = (mesg_rect.width*1.1, mesg_rect.height*1.2)
+    (pos_x, pos_y) = (mesg_rect.x-0.05*text_width, mesg_rect.y-0.1*text_height)
+
+    mouse_pos = pygame.mouse.get_pos()   
+    if pos_x <= mouse_pos[0] <= pos_x+text_width and pos_y <= mouse_pos[1] <= pos_y+text_height:
+        pygame.draw.rect(dis, light_gray, [pos_x, pos_y, text_width, text_height])
+        
+    else:
+        pygame.draw.rect(dis, dark_gray, [pos_x, pos_y, text_width, text_height])
     dis.blit(mesg, mesg_rect)
     
 def title(title_text, color):
+    global title_rect
+    
     title = title_font.render(title_text, True, color)
     title_rect = title.get_rect()
     title_rect.midbottom = (dis_width/2, dis_height/4)
@@ -62,21 +79,22 @@ def spawn_apple(x, y):
     return (foodx, foody)
 
 def main_menu():
-    game_close = False
-    
     dis.fill(white)
-    
+    title("Snake", blue)
+    game_close = False
     while not game_close:
-        title("Snake", blue)
-        message("P-Play or Q-Quit", blue)
+        mouse = pygame.mouse.get_pos()
+        message("Play", blue, dis_width/2, dis_height/2, mouse)
+        message("Quit", blue, dis_width/2, dis_height/2+50, mouse)
         pygame.display.update()
-        
+
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    gameloop(False)
-                elif event.key == pygame.K_q:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pos_x <= mouse[0] <= pos_x+text_width and pos_y <= mouse[1] <= pos_y+text_height:
                     game_close = True
+                if pos_x <= mouse[0] <= pos_x+text_width and pos_y-50 <= mouse[1] <= pos_y+text_height-50:
+                    gameloop(False)
+
     pygame.display.update()
     pygame.quit()
     quit()
@@ -118,19 +136,20 @@ def pause_menu():
     
     while not game_close:
         title("Paused", white)
-        message("P-Unpause or Q-Quit or M-Menu", white)
+        mouse = pygame.mouse.get_pos()
+        message("Unpause", blue, dis_width/2, dis_height/2, mouse)
+        message("Menu", blue, dis_width/2, dis_height/2+50, mouse)
+        message("Quit", blue, dis_width/2, dis_height/2+100, mouse)
         pygame.display.update()
         
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
-                    gameloop(True)
-                    
-                elif event.key == pygame.K_m:
-                    main_menu()
-                    
-                elif event.key == pygame.K_q:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pos_x <= mouse[0] <= pos_x+text_width and pos_y <= mouse[1] <= pos_y+text_height:
                     game_close = True
+                if pos_x <= mouse[0] <= pos_x+text_width and pos_y-50 <= mouse[1] <= pos_y+text_height-50:
+                    main_menu()
+                if pos_x <= mouse[0] <= pos_x+text_width and pos_y-100 <= mouse[1] <= pos_y+text_height-100:
+                    gameloop(True)
                     
     pygame.display.update()
     pygame.quit()
@@ -166,21 +185,23 @@ def gameloop(has_paused):
     while not game_close:
         can_turn = True
         while game_over == True:
+            mouse = pygame.mouse.get_pos()
             dis.fill(black)
             title("Game Over!", red)
-            message("Q-Quit or P-Play or M-Menu", white)
+            message("Play again", blue, dis_width/2, dis_height/2, mouse)
+            message("Menu", blue, dis_width/2, dis_height/2+50, mouse)
+            message("Quit", blue, dis_width/2, dis_height/2+100, mouse)
             pygame.display.update()
         
             for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_p:
-                        gameloop(False)
-                    elif event.key == pygame.K_q:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if pos_x <= mouse[0] <= pos_x+text_width and pos_y <= mouse[1] <= pos_y+text_height:
                         game_over = False
                         game_close = True
-                    elif event.key == pygame.K_m:
+                    if pos_x <= mouse[0] <= pos_x+text_width and pos_y-50 <= mouse[1] <= pos_y+text_height-50:
                         main_menu()
-                        
+                    if pos_x <= mouse[0] <= pos_x+text_width and pos_y-100 <= mouse[1] <= pos_y+text_height-100:
+                        gameloop(False)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
