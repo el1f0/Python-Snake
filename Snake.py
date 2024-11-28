@@ -79,6 +79,9 @@ def spawn_apple(x, y):
     return (foodx, foody)
 
 def main_menu():
+    pygame.mixer.music.load(sound_path + 'relaxing-guitar-loop-v5-245859.mp3')
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
     dis.fill(white)
     title("Snake", blue)
     game_close = False
@@ -93,6 +96,7 @@ def main_menu():
                 if pos_x <= mouse[0] <= pos_x+text_width and pos_y <= mouse[1] <= pos_y+text_height:
                     game_close = True
                 if pos_x <= mouse[0] <= pos_x+text_width and pos_y-50 <= mouse[1] <= pos_y+text_height-50:
+                    pygame.mixer.music.unload()
                     gameloop(False)
 
     pygame.display.update()
@@ -129,6 +133,7 @@ def save(x, y, length_of_snake, snake_list, snake_head, foodx, foody, x1_change,
 
 
 def pause_menu():
+    pygame.mixer.music.pause()
     has_paused = True
     game_close = False
     
@@ -149,6 +154,7 @@ def pause_menu():
                 if pos_x <= mouse[0] <= pos_x+text_width and pos_y-50 <= mouse[1] <= pos_y+text_height-50:
                     main_menu()
                 if pos_x <= mouse[0] <= pos_x+text_width and pos_y-100 <= mouse[1] <= pos_y+text_height-100:
+                    pygame.mixer.music.unpause()
                     gameloop(True)
                     
     pygame.display.update()
@@ -156,6 +162,7 @@ def pause_menu():
     quit()
     
 def gameloop(has_paused):
+    
     game_over = False
     game_close = False
     direction = ""
@@ -171,7 +178,12 @@ def gameloop(has_paused):
         x1_change = old_x1_change
         y1_change = old_y1_change
         
+        pygame.mixer.music.unpause()
+        
     else:
+        pygame.mixer.music.unload()
+        pygame.mixer.music.load(sound_path + 'forest-sounds-259933.mp3')
+        pygame.mixer.music.set_volume(0.1)
         x1 = dis_width/2
         y1 = dis_height/2
         snake_list = []
@@ -182,9 +194,11 @@ def gameloop(has_paused):
         x1_change = 0
         y1_change = 0
 
+        pygame.mixer.music.play(-1)
     while not game_close:
         can_turn = True
         while game_over == True:
+            pygame.mixer.music.unload()
             mouse = pygame.mouse.get_pos()
             dis.fill(black)
             title("Game Over!", red)
