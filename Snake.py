@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import os
 
 pygame.init()
 
@@ -26,7 +27,9 @@ snake_block = 10
 
 # Sound
 pygame.mixer.init()
-sound_path = "E:\Python\Sounds\\"
+path = os.getcwd()
+sound_path = path+"/Sounds/"
+# apple_crunch = pygame.mixer.Sound(os.path.join(sys.path[0], "apple_crunch.wav"), "r")
 apple_crunch = pygame.mixer.Sound(sound_path + "apple_crunch.wav")
 
 clock = pygame.time.Clock()
